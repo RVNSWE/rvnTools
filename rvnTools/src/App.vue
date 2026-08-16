@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import TubeFeeding from './components/TubeFeeding.vue'
 </script>
 
 <template>
-  <HelloWorld />
+  <TubeFeeding />
 </template>
