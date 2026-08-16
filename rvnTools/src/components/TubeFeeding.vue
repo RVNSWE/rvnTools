@@ -3,9 +3,16 @@ import { ref } from 'vue'
 
 defineProps(['title'])
 
+let volumes = ref({
+    day: 0,
+    flushVolume: 0,
+    feedVolume: 0,
+    totalVolume: 0,
+    containersPerDay: 0
+});
 let calculating = ref(false);
 let calculated = ref(false);
-let calculatedVolumes = ref([]);
+let calculatedVolumes = ref(new Map([]));
 let speciesSelection = ref([]);
 let diluted = ref(false);
 
@@ -29,19 +36,35 @@ function processData() {
         let days = ref(3);
 
     for (let day = 1; day < days.value; day++) {
-        let volumes = ref({
-            day: day,
-            flushVolume: 0,
-            feedVolume: 0,
-            totalVolume: 0
-        });
-
+        // create volumes for today
         // calculate volumes
-        // add volumes to calculatedVolumes array
+        calculatedVolumes.value.set(day, volumes.value);
     }
 
     calculating.value = false;
     calculated.value = true;
+}
+
+function reset() {
+    calculated.value = false;
+    // clear data object
+    calculatedVolumes.value.clear();
+}
+
+function foodContainerText() {
+    let text = '';
+    
+    if (volumes.value.containersPerDay > 1) {
+        text = 'containers';
+    }
+    else if (volumes.value.containersPerDay === 1) {
+        text = 'container';
+    }
+    else {
+        text = 'of a container';
+    }
+
+    return text;
 }
 </script>
 
