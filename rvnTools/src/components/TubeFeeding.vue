@@ -2,8 +2,6 @@
 import { ref } from 'vue'
 import { useTubeFeedCalculator } from '../composables/useTubeFeedCalculator'
 
-defineProps(['title'])
-
 const data = useTubeFeedCalculator();
 let calculating = ref(false);
 let calculated = ref(false);
