@@ -1,23 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useTubeFeedCalculator } from '../composables/useTubeFeedCalculator'
 
 defineProps(['title'])
 
-const data = {
-    day: 0,
-    bodyWeight: 0,
-    dietName: '',
-    kcalPerGram: 0,
-    dietNetWeight: 0,
-    dietWaterPercentage: 0,
-    diluted: false,
-    flushVolume: 0,
-    foodPerMeal: 0,
-    totalVolume: 0,
-    dilutionRate: 0,
-    containersPerDay: 0,
-    formattedFeedingTimes: []
-};
+const data = useTubeFeedCalculator();
 let calculating = ref(false);
 let calculated = ref(false);
 let calculatedVolumes = new Array();
@@ -43,8 +30,8 @@ function processData() {
         // temporary hardcoded value for days, will be replaced with user input
         let days = ref(3);
 
-    for (let day = 1; day < days.value; day++) {
-        data.day = day;
+    for (let thisDay = 1; thisDay < days.value; thisDay++) {
+        data.day.value = thisDay;
         // create volumes for today
         // calculate volumes
         calculatedVolumes.push(data);
@@ -63,10 +50,10 @@ function reset() {
 function foodContainerText() {
     let text = '';
     
-    if (data.containersPerDay > 1) {
+    if (data.containersPerDay.value > 1) {
         text = 'containers';
     }
-    else if (data.containersPerDay === 1) {
+    else if (data.containersPerDay.value === 1) {
         text = 'container';
     }
     else {
@@ -87,8 +74,9 @@ function foodContainerText() {
 
         <label for="species">Select species:</label>
         <select id="species" v-model="speciesSelection">
-            <option value="dog">Dog</option>
+            <option disabled value="">Please select one</option>
             <option value="cat">Cat</option>
+            <option value="dog">Dog</option>
         </select>
 
         <label for="bodyWeight">Enter body weight (kg):</label>
@@ -101,16 +89,16 @@ function foodContainerText() {
         </p>
 
         <label for="dietName">Enter diet name:</label>
-        <input type="text" id="dietName" v-model="data.dietName" />
+        <input type="text" id="dietName" v-model.trim="data.dietName" />
 
-        <label for="kcalPerGram">Enter kcal per gram:</label>
-        <input type="number" id="kcalPerGram" v-model="data.kcalPerGram" />
+        <label for="kcalPerG">Enter kcal per gram:</label>
+        <input type="number" id="kcalPerG" v-model="data.kcalPerG.value" />
 
         <label for="dietNetWeight">Enter diet net weight (g):</label>
-        <input type="number" id="dietNetWeight" v-model="data.dietNetWeight" />
+        <input type="number" id="dietNetWeight" v-model="data.dietNetWeight.value" />
 
-        <label for="dietWaterPercentage">Enter diet water percentage:</label>
-        <input type="number" id="dietWaterPercentage" v-model="data.dietWaterPercentage" />
+        <label for="waterPercentage">Enter diet water percentage:</label>
+        <input type="number" id="waterPercentage" v-model="data.waterPercentage.value" />
 
         <h3>Feeding information</h3>
 
@@ -124,6 +112,7 @@ function foodContainerText() {
 
         <label for="diluted">Dilute food with water or administer separately?:</label>
         <select id="diluted" v-model="diluted">
+            <option disabled value="">Please select one</option>
             <option value="diluted">Diluted</option>
             <option value="separate">Separate</option>
         </select>
@@ -197,7 +186,6 @@ function foodContainerText() {
             <br />
 
             <h4>Administering the food</h4>
-            <p>
                 <ol>
                     <li>
                         <p>Pinch the feeding tube to prevent food from leaking out or air from being sucked in when you remove
@@ -226,7 +214,6 @@ function foodContainerText() {
                         the used syringes with water to clean them ready for the next feed.</p>
                     </li>
                 </ol>
-            </p>
     </div>
     
 </template>
