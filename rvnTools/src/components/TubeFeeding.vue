@@ -3,21 +3,24 @@ import { ref } from 'vue'
 
 defineProps(['title'])
 
-let data = ref({
+const data = {
+    day: 0,
     bodyWeight: 0,
     dietName: '',
     kcalPerGram: 0,
     dietNetWeight: 0,
     dietWaterPercentage: 0,
-    day: 0,
+    diluted: false,
     flushVolume: 0,
-    feedVolume: 0,
+    foodPerMeal: 0,
     totalVolume: 0,
-    containersPerDay: 0
-});
+    dilutionRate: 0,
+    containersPerDay: 0,
+    formattedFeedingTimes: []
+};
 let calculating = ref(false);
 let calculated = ref(false);
-let calculatedVolumes = ref(new Map([]));
+let calculatedVolumes = new Array();
 let speciesSelection = ref([]);
 let diluted = ref(false);
 
@@ -41,9 +44,10 @@ function processData() {
         let days = ref(3);
 
     for (let day = 1; day < days.value; day++) {
+        data.day = day;
         // create volumes for today
         // calculate volumes
-        calculatedVolumes.value.set(day, data.value);
+        calculatedVolumes.push(data);
     }
 
     calculating.value = false;
@@ -53,16 +57,16 @@ function processData() {
 function reset() {
     calculated.value = false;
     // clear data object
-    calculatedVolumes.value.clear();
+    calculatedVolumes = [];
 }
 
 function foodContainerText() {
     let text = '';
     
-    if (data.value.containersPerDay > 1) {
+    if (data.containersPerDay > 1) {
         text = 'containers';
     }
-    else if (data.value.containersPerDay === 1) {
+    else if (data.containersPerDay === 1) {
         text = 'container';
     }
     else {
@@ -126,8 +130,103 @@ function foodContainerText() {
     </div>
 
     <div v-else>
+        <h2>Patient Details</h2>
+
+
+        
         <h2>Tube Feeding Plan</h2>
 
-        <p>Your tube feeding plan has been calculated.</p>
+        <div>
+                <ul v-for="meal in calculatedVolumes">
+                    <li><strong><u>Day {{ meal.day }}:</u></strong></li>
+                    <li>Flush Volume: {{ meal.flushVolume }} ml</li>
+                    <div v-if="meal.diluted">
+                        <li>Volume per meal: {{ meal.foodPerMeal }} ml</li>
+                        <li v-if="meal.dilutionRate > 0">Water: {{ meal.dilutionRate }} ml of water per gram of food</li>
+                    </div>
+                    <div v-else>
+                        <li>Food per meal: {{ meal.foodPerMeal }} ml</li>
+                        <li v-if="meal.waterPerMeal > 0">Water per meal: {{ meal.waterPerMeal }} ml</li>
+                    </div>
+                    <li>Meals per day: {{ meal.mealsPerDay }}</li>
+                    <li>Estimated amount of food used per day: {{ meal.containersPerDay }} {{ foodContainerText() }}</li>
+                    <li>Suggested feeding schedule || <span v-for="time in meal.formattedFeedingTimes">{{ time }} || </span></li>
+                    <li>Containers per Day: {{ meal.containersPerDay }} {{ foodContainerText() }}</li>
+                </ul>
+        </div>
+        <br />
+
+            <p>
+                <strong>It is vital you follow the above feeding plan in order to prevent refeeding syndrome.</strong> Refeeding
+                syndrome is a life-threatening condition caused by reintroducing food too rapidly after prolonged
+                periods of not eating, which is why it must be done gradually over the first three days.
+            </p>
+            <p>
+                You are free to adjust the times at which you feed your pet to suit you, but please spread them out as
+                much as possible and allow a minimum of one hour between feeds to avoid overloading the stomach and
+                causing regurgitation.
+            </p>
+            <p>
+                Unless advised otherwise by your clinic, fresh water should remain available at all times and you
+                should leave the calculated volume of food in your pet's normal bowl between feeds to allow the
+                opportunity to eat unassisted. If it has all been eaten by the time of their next scheduled feed, offer
+                a fresh bowl of food instead of tube feeding.
+            </p>
+            <br />
+
+            <h4>Preparing the food</h4>
+            <p>
+                Prepare two syringes of tap water to flush the tube with before and after feeding. If your pet has been
+                offered food and eaten some but not all of it, draw the rest of it up into a syringe (or around the same volume
+                of fresh food if it's looking dry or stale). This is all the food you will need to administer for this meal.
+                If your pet has not eaten on their own, prepare the volume listed above.
+            </p>
+            <p v-if="data.diluted">
+                If a dilution rate is provided in the instructions above, prepare a portion of food mixed with water at the
+                dilution rate specified. From this, draw up the volume to be administered into a separate syringe.
+            </p>
+            <p v-else>
+                If the instructions above specify a volume of water to administer in addition to food, either draw this up
+                in its own syringe to administer separately or add it to one of the syringes of water to be used for flush.
+                Draw up the specified volume of food into a syringe on its own.
+            </p>
+            <p>
+                Place the filled syringes into a jug of <strong>warm</strong> (not hot!) water until they reach body temperature.
+                <strong>DO NOT MICROWAVE</strong>, as this can create pockets of hot liquid that may scald your pet.
+            </p>
+            <br />
+
+            <h4>Administering the food</h4>
+            <p>
+                <ol>
+                    <li>
+                        <p>Pinch the feeding tube to prevent food from leaking out or air from being sucked in when you remove
+                        the cap. Attach an empty syringe to the feeding tube port, stop pinching, and gently draw back on
+                        the plunger. You should feel some resistance, and the plunger should return to its starting
+                        position when you let go of it. <strong>If this does not happen, it may mean the tube has become
+                        displaced. STOP immediately, and contact the clinic for advice.</strong></p>
+                    </li>
+                    <li>
+                        <p><strong>Slowly</strong> flush the feeding tube with water before administering any food.
+                        <strong>If your pet starts coughing, gagging, retching, or appearing uncomfortable while flushing, STOP
+                        immediately and contact the clinic for advice.</strong></p>
+                    </li>
+                    <li>
+                        <p>Slowly administer the prepared volume of food through the tube. You may notice your pet
+                        swallowing as you do this. This is normal, as the food is being administered into the oesophagus
+                        rather than directly into the stomach. If they regurgitate, slow down even more.
+                        <strong>If regurgitation continues, stop feeding and contact the clinic for advice.</strong></p>
+                    </li>
+                    <li>
+                        <p>Slowly flush the tube with water again to clear any residual food.</p>
+                    </li>
+                    <li>
+                        <p>Place the cap back on the feeding tube and wipe away any food from the outside of the tube
+                        with a clean cloth. Ensure the outside of the tube is dry before tucking it away again. Rinse
+                        the used syringes with water to clean them ready for the next feed.</p>
+                    </li>
+                </ol>
+            </p>
     </div>
+    
 </template>
