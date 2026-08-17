@@ -31,7 +31,7 @@ function processData() {
     for (let thisDay = 1; thisDay < days.value; thisDay++) {
         data.day.value = thisDay;
         // create volumes for today
-        // calculate volumes
+        data.calculate();
         calculatedVolumes.push(data);
     }
 
@@ -114,6 +114,8 @@ function foodContainerText() {
             <option value="diluted">Diluted</option>
             <option value="separate">Separate</option>
         </select>
+
+        <button @click="processData()">Calculate</button>
     </div>
 
     <div v-else>
