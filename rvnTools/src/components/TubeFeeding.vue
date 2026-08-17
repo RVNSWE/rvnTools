@@ -11,8 +11,6 @@ let diluted = ref(false);
 
 function processData() {
     calculating.value = true;
-    
-    // create data object here?
 
         //data.FlushVolume = data.BodyWeight switch
         //{
@@ -26,13 +24,11 @@ function processData() {
         //};
 
         // temporary hardcoded value for days, will be replaced with user input
-        let days = ref(3);
 
-    for (let thisDay = 1; thisDay < days.value; thisDay++) {
-        data.day.value = thisDay;
-        // create volumes for today
-        data.calculate();
-        calculatedVolumes.push(data);
+    for (let thisDay = 1; thisDay < data.days.value; thisDay++) {
+        data.day.value = thisDay; // set the day for the current iteration
+        data.calculate(); // perform the calculations for the current day
+        calculatedVolumes.push(data); // store the calculated data for the current day in the array
     }
 
     calculating.value = false;
@@ -106,7 +102,7 @@ function foodContainerText() {
         </p>
 
         <label for="days">Number of days to re-feed over:</label>
-        <input type="number" id="days" v-model="data.day" />
+        <input type="number" id="days" v-model="data.days" />
 
         <label for="diluted">Dilute food with water or administer separately?:</label>
         <select id="diluted" v-model="diluted">
