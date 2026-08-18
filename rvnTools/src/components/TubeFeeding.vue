@@ -2,31 +2,57 @@
 import { ref } from 'vue'
 import { useTubeFeedCalculator } from '../composables/useTubeFeedCalculator'
 
-const data = useTubeFeedCalculator();
-let calculating = ref(false);
-let calculated = ref(false);
-let calculatedVolumes = new Array();
-let speciesSelection = ref([]);
-let diluted = ref(false);
+let calculating = ref(false)
+let calculated = ref(false)
+let calculatedVolumes = new Array()
+const mealPlan = {
+    days: 3,
+    species: 'cat',
+    bodyWeight: 5,
+    dietName: 'Convalescence',
+    kcalPerG: 1.128,
+    dietNetWeight: 195,
+    waterPercentage: 77,
+    diluted: false
+}
 
 function processData() {
     calculating.value = true;
 
-        //data.FlushVolume = data.BodyWeight switch
-        //{
-        //    < 1 => 1.5,
-        //    < 1.5 => 2.5,
-        //    < 2 => 2.5,
-        //    < 3 => 3,
-        //    < 5 => 4,
-        //    < 10 => 5,
-        //    _ => 10,
-        //};
-
-        // temporary hardcoded value for days, will be replaced with user input
-
-    for (let thisDay = 1; thisDay < data.days.value; thisDay++) {
+    for (let thisDay = 1; thisDay < mealPlan.days + 1; thisDay++) {
+        const data = useTubeFeedCalculator()
         data.day.value = thisDay; // set the day for the current iteration
+        data.days.value = mealPlan.days;
+        data.species.value = mealPlan.species;
+        data.bodyWeight.value = mealPlan.bodyWeight;
+        data.dietName.value = mealPlan.dietName;
+        data.kcalPerG.value = mealPlan.kcalPerG;
+        data.dietNetWeight.value = mealPlan.dietNetWeight;
+        data.waterPercentage.value = mealPlan.waterPercentage;
+        data.diluted.value = mealPlan.diluted;
+
+        if (data.bodyWeight.value < 1) {
+            data.flushVol.value = 1.5;
+        }
+        else if (data.bodyWeight.value < 1.5) {
+            data.flushVol.value = 2;
+        }
+        else if (data.bodyWeight.value < 2) {
+            data.flushVol.value = 2.5;
+        }
+        else if (data.bodyWeight.value < 3) {
+            data.flushVol.value = 3;
+        }
+        else if (data.bodyWeight.value < 5) {
+            data.flushVol.value = 4;
+        }
+        else if (data.bodyWeight.value < 10) {
+            data.flushVol.value = 5;
+        }
+        else {
+            data.flushVol.value = 10;
+        }
+
         data.calculate(); // perform the calculations for the current day
         calculatedVolumes.push(data); // store the calculated data for the current day in the array
     }
@@ -36,18 +62,17 @@ function processData() {
 }
 
 function reset() {
-    calculated.value = false;
-    // clear data object
     calculatedVolumes = [];
+    calculated.value = false;
 }
 
-function foodContainerText() {
+function foodContainerText(containersPerDay: number) {
     let text = '';
     
-    if (data.containersPerDay.value > 1) {
+    if (containersPerDay > 1) {
         text = 'containers';
     }
-    else if (data.containersPerDay.value === 1) {
+    else if (containersPerDay === 1) {
         text = 'container';
     }
     else {
@@ -67,14 +92,14 @@ function foodContainerText() {
         <h3>Patient Information</h3>
 
         <label for="species">Select species:</label>
-        <select id="species" v-model="speciesSelection">
+        <select id="species" v-model="mealPlan.species">
             <option disabled value="">Please select one</option>
             <option value="cat">Cat</option>
             <option value="dog">Dog</option>
         </select>
 
         <label for="bodyWeight">Enter body weight (kg):</label>
-        <input type="number" id="bodyWeight" v-model="data.bodyWeight" />
+        <input type="number" id="bodyWeight" v-model="mealPlan.bodyWeight" />
 
         <h3>Diet Information</h3>
 
@@ -83,16 +108,16 @@ function foodContainerText() {
         </p>
 
         <label for="dietName">Enter diet name:</label>
-        <input type="text" id="dietName" v-model.trim="data.dietName" />
+        <input type="text" id="dietName" v-model.trim="mealPlan.dietName" />
 
         <label for="kcalPerG">Enter kcal per gram:</label>
-        <input type="number" id="kcalPerG" v-model="data.kcalPerG.value" />
+        <input type="number" id="kcalPerG" v-model="mealPlan.kcalPerG" />
 
         <label for="dietNetWeight">Enter diet net weight (g):</label>
-        <input type="number" id="dietNetWeight" v-model="data.dietNetWeight.value" />
+        <input type="number" id="dietNetWeight" v-model="mealPlan.dietNetWeight" />
 
         <label for="waterPercentage">Enter diet water percentage:</label>
-        <input type="number" id="waterPercentage" v-model="data.waterPercentage.value" />
+        <input type="number" id="waterPercentage" v-model="mealPlan.waterPercentage" />
 
         <h3>Feeding information</h3>
 
@@ -102,41 +127,65 @@ function foodContainerText() {
         </p>
 
         <label for="days">Number of days to re-feed over:</label>
-        <input type="number" id="days" v-model="data.days" />
+        <input type="number" id="days" v-model="mealPlan.days" />
 
         <label for="diluted">Dilute food with water or administer separately?:</label>
-        <select id="diluted" v-model="diluted">
+        <select id="diluted" v-model="mealPlan.diluted">
             <option disabled value="">Please select one</option>
-            <option value="diluted">Diluted</option>
-            <option value="separate">Separate</option>
+            <option value="true">Diluted</option>
+            <option value="false">Separate</option>
         </select>
 
         <button @click="processData()">Calculate</button>
     </div>
 
     <div v-else>
-        <h2>Patient Details</h2>
+        <h2>Patient and Diet Information</h2>
 
+        <div>
+            <p>
+                Patient: <strong>{{ mealPlan.bodyWeight }} kg {{ mealPlan.species }}</strong>.
+            </p>
+            <p>
+                Diet: <strong>{{ mealPlan.dietName }}, 
+                    {{ mealPlan.kcalPerG }} kcal/g, 
+                    {{ mealPlan.waterPercentage }} % moisture content, 
+                    {{ mealPlan.dietNetWeight }} g per container</strong>.
+            </p>
+            <p v-if="mealPlan.days > 1">
+                Increase from 1/{{ mealPlan.days }} to full RER over {{ mealPlan.days }} days.
+            </p>
+            <p v-else>
+                Start at full RER.
+            </p>
+            <p v-if="mealPlan.diluted">
+                Dilute the food with water at a rate of {{ calculatedVolumes[0].dilutionRate.value }} ml/g before drawing it up to administer.
+            </p>
+            <p v-else>
+                Administer food and water separately.
+            </p>
+        </div>
 
+        <button @click="reset()">Reset</button>
         
         <h2>Tube Feeding Plan</h2>
 
         <div>
                 <ul v-for="meal in calculatedVolumes">
                     <li><strong><u>Day {{ meal.day }}:</u></strong></li>
-                    <li>Flush Volume: {{ meal.flushVolume }} ml</li>
+                    <li>Flush Volume: {{ meal.flushVol }} ml</li>
                     <div v-if="meal.diluted">
-                        <li>Volume per meal: {{ meal.foodPerMeal }} ml</li>
+                        <li>Volume per meal: {{ meal.foodVolPerMeal }} ml</li>
                         <li v-if="meal.dilutionRate > 0">Water: {{ meal.dilutionRate }} ml of water per gram of food</li>
                     </div>
                     <div v-else>
-                        <li>Food per meal: {{ meal.foodPerMeal }} ml</li>
+                        <li>Food per meal: {{ meal.foodVolPerMeal }} ml</li>
                         <li v-if="meal.waterPerMeal > 0">Water per meal: {{ meal.waterPerMeal }} ml</li>
                     </div>
                     <li>Meals per day: {{ meal.mealsPerDay }}</li>
-                    <li>Estimated amount of food used per day: {{ meal.containersPerDay }} {{ foodContainerText() }}</li>
-                    <li>Suggested feeding schedule || <span v-for="time in meal.formattedFeedingTimes">{{ time }} || </span></li>
-                    <li>Containers per Day: {{ meal.containersPerDay }} {{ foodContainerText() }}</li>
+                    <li>Estimated amount of food used per day: {{ meal.containersPerDay }} {{ foodContainerText(meal.containersPerDay) }}</li>
+                    <li>Suggested feeding schedule || <span v-for="time in meal.formattedPlan">{{ time }} || </span></li>
+                    <li>Containers per Day: {{ meal.containersPerDay }} {{ foodContainerText(meal.containersPerDay) }}</li>
                 </ul>
         </div>
         <br />
@@ -166,7 +215,7 @@ function foodContainerText() {
                 of fresh food if it's looking dry or stale). This is all the food you will need to administer for this meal.
                 If your pet has not eaten on their own, prepare the volume listed above.
             </p>
-            <p v-if="data.diluted">
+            <p v-if="mealPlan.diluted">
                 If a dilution rate is provided in the instructions above, prepare a portion of food mixed with water at the
                 dilution rate specified. From this, draw up the volume to be administered into a separate syringe.
             </p>

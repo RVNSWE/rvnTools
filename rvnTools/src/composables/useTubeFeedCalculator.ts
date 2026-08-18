@@ -35,7 +35,7 @@ export function useTubeFeedCalculator() {
         maxVolPerMeal.value = bodyWeight.value * maxMlPerKg; // maximum volume per meal based on body weight
         rer.value = (70 * Math.pow(bodyWeight.value, 0.75)) / days.value * day.value; // RER calculation
         foodVolPerDay.value = rer.value / kcalPerG.value; // food volume per day based on RER and kcal per gram
-        containersPerDay.value = Math.ceil(foodVolPerDay.value / dietNetWeight.value); // number of containers per day
+        containersPerDay.value = Math.round(foodVolPerDay.value / dietNetWeight.value * 10) / 10; // number of containers per day
         dietWaterVol.value = foodVolPerDay.value * (waterPercentage.value / 100); // water volume from diet
         additionalWaterVol.value = calculateBasicFluidRequirement() - dietWaterVol.value; // additional water volume needed
         totalVolPerDay.value = foodVolPerDay.value + additionalWaterVol.value; // total volume per day
