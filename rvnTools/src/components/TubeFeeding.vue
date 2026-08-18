@@ -107,7 +107,7 @@ function foodContainerText(containersPerDay: number) {
         </select>
 
         <label for="bodyWeight">Enter body weight (kg):</label>
-        <input type="number" id="bodyWeight" v-model="mealPlan.bodyWeight.value" />
+        <input type="number" min="0.1" max="100" id="bodyWeight" v-model="mealPlan.bodyWeight.value" />
 
         <h3>Diet Information</h3>
 
@@ -116,16 +116,16 @@ function foodContainerText(containersPerDay: number) {
         </p>
 
         <label for="dietName">Enter diet name:</label>
-        <input type="text" id="dietName" v-model.trim="mealPlan.dietName.value" />
+        <input type="text" minlength="0" maxlength="60" id="dietName" v-model.trim="mealPlan.dietName.value" />
 
         <label for="kcalPerG">Enter kcal per gram:</label>
-        <input type="number" id="kcalPerG" v-model="mealPlan.kcalPerG.value" />
+        <input type="number" min="0.1" max="10" id="kcalPerG" v-model="mealPlan.kcalPerG.value" />
 
         <label for="dietNetWeight">Enter diet net weight (g):</label>
-        <input type="number" id="dietNetWeight" v-model="mealPlan.dietNetWeight.value" />
+        <input type="number" min="0.1" max="10000" id="dietNetWeight" v-model="mealPlan.dietNetWeight.value" />
 
         <label for="waterPercentage">Enter diet water percentage:</label>
-        <input type="number" id="waterPercentage" v-model="mealPlan.waterPercentage.value" />
+        <input type="number" min="1" max="99" id="waterPercentage" v-model="mealPlan.waterPercentage.value" />
 
         <h3>Feeding information</h3>
 
@@ -135,7 +135,7 @@ function foodContainerText(containersPerDay: number) {
         </p>
 
         <label for="days">Number of days to re-feed over:</label>
-        <input type="number" id="days" v-model="mealPlan.days.value" />
+        <input type="number" min="1" max="5" id="days" v-model="mealPlan.days.value" />
 
         <label for="diluted">Dilute food with water or administer separately?:</label>
         <select id="diluted" v-model="mealPlan.diluted.value">
