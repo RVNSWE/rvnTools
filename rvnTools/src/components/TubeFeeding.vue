@@ -6,30 +6,30 @@ let calculating = ref(false)
 let calculated = ref(false)
 let calculatedVolumes = new Array()
 const mealPlan = {
-    days: 3,
-    species: 'cat',
-    bodyWeight: 5,
-    dietName: 'Convalescence',
-    kcalPerG: 1.128,
-    dietNetWeight: 195,
-    waterPercentage: 77,
-    diluted: false
+    days: ref(3),
+    species: ref('cat'),
+    bodyWeight: ref(5),
+    dietName: ref('Convalescence'),
+    kcalPerG: ref(1.128),
+    dietNetWeight: ref(195),
+    waterPercentage: ref(77),
+    diluted: ref(false)
 }
 
 function processData() {
     calculating.value = true;
 
-    for (let thisDay = 1; thisDay < mealPlan.days + 1; thisDay++) {
+    for (let thisDay = 1; thisDay < mealPlan.days.value + 1; thisDay++) {
         const data = useTubeFeedCalculator()
         data.day.value = thisDay; // set the day for the current iteration
-        data.days.value = mealPlan.days;
-        data.species.value = mealPlan.species;
-        data.bodyWeight.value = mealPlan.bodyWeight;
-        data.dietName.value = mealPlan.dietName;
-        data.kcalPerG.value = mealPlan.kcalPerG;
-        data.dietNetWeight.value = mealPlan.dietNetWeight;
-        data.waterPercentage.value = mealPlan.waterPercentage;
-        data.diluted.value = mealPlan.diluted;
+        data.days.value = mealPlan.days.value;
+        data.species.value = mealPlan.species.value;
+        data.bodyWeight.value = mealPlan.bodyWeight.value;
+        data.dietName.value = mealPlan.dietName.value;
+        data.kcalPerG.value = mealPlan.kcalPerG.value;
+        data.dietNetWeight.value = mealPlan.dietNetWeight.value;
+        data.waterPercentage.value = mealPlan.waterPercentage.value;
+        data.diluted.value = mealPlan.diluted.value;
 
         if (data.bodyWeight.value < 1) {
             data.flushVol.value = 1.5;
@@ -62,6 +62,14 @@ function processData() {
 }
 
 function reset() {
+    mealPlan.days.value = 3;
+    mealPlan. species.value = 'cat';
+    mealPlan.bodyWeight.value = 5;
+    mealPlan.dietName.value = 'Convalescence';
+    mealPlan.kcalPerG.value = 1.128;
+    mealPlan.dietNetWeight.value = 195;
+    mealPlan.waterPercentage.value = 77;
+    mealPlan.diluted.value = false;
     calculatedVolumes = [];
     calculated.value = false;
 }
@@ -92,14 +100,14 @@ function foodContainerText(containersPerDay: number) {
         <h3>Patient Information</h3>
 
         <label for="species">Select species:</label>
-        <select id="species" v-model="mealPlan.species">
+        <select id="species" v-model="mealPlan.species.value">
             <option disabled value="">Please select one</option>
             <option value="cat">Cat</option>
             <option value="dog">Dog</option>
         </select>
 
         <label for="bodyWeight">Enter body weight (kg):</label>
-        <input type="number" id="bodyWeight" v-model="mealPlan.bodyWeight" />
+        <input type="number" id="bodyWeight" v-model="mealPlan.bodyWeight.value" />
 
         <h3>Diet Information</h3>
 
@@ -108,16 +116,16 @@ function foodContainerText(containersPerDay: number) {
         </p>
 
         <label for="dietName">Enter diet name:</label>
-        <input type="text" id="dietName" v-model.trim="mealPlan.dietName" />
+        <input type="text" id="dietName" v-model.trim="mealPlan.dietName.value" />
 
         <label for="kcalPerG">Enter kcal per gram:</label>
-        <input type="number" id="kcalPerG" v-model="mealPlan.kcalPerG" />
+        <input type="number" id="kcalPerG" v-model="mealPlan.kcalPerG.value" />
 
         <label for="dietNetWeight">Enter diet net weight (g):</label>
-        <input type="number" id="dietNetWeight" v-model="mealPlan.dietNetWeight" />
+        <input type="number" id="dietNetWeight" v-model="mealPlan.dietNetWeight.value" />
 
         <label for="waterPercentage">Enter diet water percentage:</label>
-        <input type="number" id="waterPercentage" v-model="mealPlan.waterPercentage" />
+        <input type="number" id="waterPercentage" v-model="mealPlan.waterPercentage.value" />
 
         <h3>Feeding information</h3>
 
@@ -127,13 +135,13 @@ function foodContainerText(containersPerDay: number) {
         </p>
 
         <label for="days">Number of days to re-feed over:</label>
-        <input type="number" id="days" v-model="mealPlan.days" />
+        <input type="number" id="days" v-model="mealPlan.days.value" />
 
         <label for="diluted">Dilute food with water or administer separately?:</label>
-        <select id="diluted" v-model="mealPlan.diluted">
+        <select id="diluted" v-model="mealPlan.diluted.value">
             <option disabled value="">Please select one</option>
-            <option value="true">Diluted</option>
             <option value="false">Separate</option>
+            <option value="true">Diluted</option>
         </select>
 
         <button @click="processData()">Calculate</button>
@@ -152,14 +160,14 @@ function foodContainerText(containersPerDay: number) {
                     {{ mealPlan.waterPercentage }} % moisture content, 
                     {{ mealPlan.dietNetWeight }} g per container</strong>.
             </p>
-            <p v-if="mealPlan.days > 1">
+            <p v-if="mealPlan.days.value > 1">
                 Increase from 1/{{ mealPlan.days }} to full RER over {{ mealPlan.days }} days.
             </p>
             <p v-else>
                 Start at full RER.
             </p>
-            <p v-if="mealPlan.diluted">
-                Dilute the food with water at a rate of {{ calculatedVolumes[0].dilutionRate.value }} ml/g before drawing it up to administer.
+            <p v-if="mealPlan.diluted.value">
+                Dilute the food with water at a rate of {{ calculatedVolumes[0].dilutionRate }} ml/g before drawing it up to administer.
             </p>
             <p v-else>
                 Administer food and water separately.
@@ -174,18 +182,18 @@ function foodContainerText(containersPerDay: number) {
                 <ul v-for="meal in calculatedVolumes">
                     <li><strong><u>Day {{ meal.day }}:</u></strong></li>
                     <li>Flush Volume: {{ meal.flushVol }} ml</li>
-                    <div v-if="meal.diluted">
+                    <div v-if="meal.diluted.value">
                         <li>Volume per meal: {{ meal.foodVolPerMeal }} ml</li>
-                        <li v-if="meal.dilutionRate > 0">Water: {{ meal.dilutionRate }} ml of water per gram of food</li>
+                        <li v-if="meal.dilutionRate.value > 0">Water: {{ meal.dilutionRate }} ml of water per gram of food</li>
                     </div>
                     <div v-else>
                         <li>Food per meal: {{ meal.foodVolPerMeal }} ml</li>
-                        <li v-if="meal.waterPerMeal > 0">Water per meal: {{ meal.waterPerMeal }} ml</li>
+                        <li v-if="meal.waterVolPerMeal.value > 0">Water per meal: {{ meal.waterVolPerMeal }} ml</li>
                     </div>
                     <li>Meals per day: {{ meal.mealsPerDay }}</li>
-                    <li>Estimated amount of food used per day: {{ meal.containersPerDay }} {{ foodContainerText(meal.containersPerDay) }}</li>
-                    <li>Suggested feeding schedule || <span v-for="time in meal.formattedPlan">{{ time }} || </span></li>
-                    <li>Containers per Day: {{ meal.containersPerDay }} {{ foodContainerText(meal.containersPerDay) }}</li>
+                    <li>Estimated amount of food used per day: {{ meal.containersPerDay }} {{ foodContainerText(meal.containersPerDay.value) }}</li>
+                    <li>Suggested feeding schedule || <span v-for="time in meal.formattedPlan.value">{{ time }} || </span></li>
+                    <li>Containers per Day: {{ meal.containersPerDay }} {{ foodContainerText(meal.containersPerDay.value) }}</li>
                 </ul>
         </div>
         <br />
@@ -215,7 +223,7 @@ function foodContainerText(containersPerDay: number) {
                 of fresh food if it's looking dry or stale). This is all the food you will need to administer for this meal.
                 If your pet has not eaten on their own, prepare the volume listed above.
             </p>
-            <p v-if="mealPlan.diluted">
+            <p v-if="mealPlan.diluted.value">
                 If a dilution rate is provided in the instructions above, prepare a portion of food mixed with water at the
                 dilution rate specified. From this, draw up the volume to be administered into a separate syringe.
             </p>
