@@ -31,28 +31,6 @@ function processData() {
         data.waterPercentage.value = mealPlan.waterPercentage.value;
         data.diluted.value = mealPlan.diluted.value;
 
-        if (data.bodyWeight.value < 1) {
-            data.flushVol.value = 1.5;
-        }
-        else if (data.bodyWeight.value < 1.5) {
-            data.flushVol.value = 2;
-        }
-        else if (data.bodyWeight.value < 2) {
-            data.flushVol.value = 2.5;
-        }
-        else if (data.bodyWeight.value < 3) {
-            data.flushVol.value = 3;
-        }
-        else if (data.bodyWeight.value < 5) {
-            data.flushVol.value = 4;
-        }
-        else if (data.bodyWeight.value < 10) {
-            data.flushVol.value = 5;
-        }
-        else {
-            data.flushVol.value = 10;
-        }
-
         data.calculate(); // perform the calculations for the current day
         calculatedVolumes.push(data); // store the calculated data for the current day in the array
     }
