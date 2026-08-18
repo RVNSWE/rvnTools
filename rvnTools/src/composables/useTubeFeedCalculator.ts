@@ -157,7 +157,7 @@ export function useTubeFeedCalculator() {
 
     function calculateTimeLine() {
         mealHalfTime.value = getScheduleLength() / 2; // half the number of hours the feeds are spread over
-        startTime.value = Math.round(midPoint.value - mealHalfTime.value * 2) / 2; // Calculate the feeding schedule start time from its mid point
+        startTime.value = Math.round((midPoint.value - mealHalfTime.value) * 2) / 2; // Calculate the feeding schedule start time from its mid point
     }
 
     function calculateFeedingPlan() {
@@ -187,24 +187,24 @@ export function useTubeFeedCalculator() {
             }
         }
 
-        let time = startTime.value; // Start from the calculated start time
+        const time = ref(startTime.value); // Start from the calculated start time
         let feedingTimes = [];
 
         if (mealsPerDay.value > 23)
         {
-            time = 0; // set the time to midnight
-            for (let i = 0; i < 24; i++)
+            time.value = 0; // set the time to midnight
+            for (let i = 0; i < 24; i += 1)
             {
-                feedingTimes.push(time); // add the time to the feeding times array
-                time += 1; // increment the time by 1 hour for the next feeding
+                feedingTimes.push(time.value); // add the time to the feeding times array
+                time.value += 1; // increment the time by 1 hour for the next feeding
             }
         }
         else
         {
-            for (let i = 0; i < mealsPerDay.value; i++)
+            for (let i = 0; i < mealsPerDay.value; i += 1)
             {
-                feedingTimes.push(time); // add the time to the feeding times array
-                time += interval.value; // increment the time by the calculated interval for the next feeding
+                feedingTimes.push(time.value); // add the time to the feeding times array
+                time.value += interval.value; // increment the time by the calculated interval for the next feeding
             }
         }
 
@@ -214,11 +214,11 @@ export function useTubeFeedCalculator() {
     function formatFeedingPlan() {
         let feedingTimes = calculateFeedingPlan(); // Get the calculated feeding times
 
-        for (let i = 0; i < feedingTimes.length; i++)
+        for (let i = 0; i < feedingTimes.length; i += 1)
         {
             let time = feedingTimes[i];
-            let roundedTime = Math.round(feedingTimes[i]); // Round the feeding time to the nearest whole number
-            let formattedTime = '';
+            let roundedTime = Math.round(feedingTimes[i]); // Round the feeding time to the nearest integer
+            let formattedTime = ''; // Prepare a string field for the formatted (human readable) time
             let hours = Math.floor(time).toString(); // round down to the nearest whole number for hours
             let minutes = ':00'; // Default minutes to ":00"
 
