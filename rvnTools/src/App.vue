@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TubeFeeding from './components/TubeFeeding.vue'
+import Main from './components/Main.vue'
 </script>
 
 <template>
-  <TubeFeeding />
+  <Main />
 </template>

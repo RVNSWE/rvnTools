@@ -210,7 +210,6 @@ test('checks the additional water requirement calculation', () => {
     const comp = useTubeFeedCalculator();
     
     comp.species.value = 'cat';
-    comp.waterPercentage.value = 88;
     
     comp.bodyWeight.value = -1;
     comp.dietWaterVol.value = NaN;
@@ -242,7 +241,6 @@ test('checks the total volume per day calculation', () => {
     const comp = useTubeFeedCalculator();
     
     comp.species.value = 'cat';
-    comp.waterPercentage.value = 88;
     
     comp.bodyWeight.value = -1;
     comp.foodVolPerDay.value = NaN;
@@ -273,4 +271,112 @@ test('checks the total volume per day calculation', () => {
     comp.additionalWaterVol.value = 3272;
     comp.getTotalVolPerDay();
     expect(Math.round(comp.totalVolPerDay.value * 100) / 100).toBe(15720);
+})
+
+test('checks the food per meal calculation', () => {
+    const comp = useTubeFeedCalculator();
+    
+    comp.species.value = 'cat';
+    
+    comp.bodyWeight.value = -1;
+    comp.foodVolPerDay.value = NaN;
+    comp.mealsPerDay.value = NaN;
+    comp.getFoodVolPerMeal();
+    expect(Math.round(comp.foodVolPerMeal.value * 100) / 100).toBe(NaN);
+    
+    comp.bodyWeight.value = 0;
+    comp.foodVolPerDay.value = 0;
+    comp.mealsPerDay.value = NaN;
+    comp.getFoodVolPerMeal();
+    expect(Math.round(comp.foodVolPerMeal.value * 100) / 100).toBe(NaN);
+    
+    comp.bodyWeight.value = 1;
+    comp.foodVolPerDay.value = 70;
+    comp.mealsPerDay.value = 9;
+    comp.getFoodVolPerMeal();
+    expect(Math.round(comp.foodVolPerMeal.value * 100) / 100).toBe(7.78);
+
+    comp.bodyWeight.value = 33.33;
+    comp.foodVolPerDay.value = 971;
+    comp.mealsPerDay.value = 4;
+    comp.getFoodVolPerMeal();
+    expect(Math.round(comp.foodVolPerMeal.value * 100) / 100).toBe(242.75);
+    
+    comp.bodyWeight.value = 1000;
+    comp.foodVolPerDay.value = 12448;
+    comp.mealsPerDay.value = 2;
+    comp.getFoodVolPerMeal();
+    expect(Math.round(comp.foodVolPerMeal.value * 100) / 100).toBe(6224);
+})
+
+test('checks the water per meal calculation', () => {
+    const comp = useTubeFeedCalculator();
+    
+    comp.species.value = 'cat';
+    
+    comp.bodyWeight.value = -1;
+    comp.waterVolPerDay.value = NaN;
+    comp.mealsPerDay.value = NaN;
+    comp.getWaterVolPerMeal();
+    expect(Math.round(comp.waterVolPerMeal.value * 100) / 100).toBe(NaN);
+    
+    comp.bodyWeight.value = 0;
+    comp.waterVolPerDay.value = NaN;
+    comp.mealsPerDay.value = NaN;
+    comp.getWaterVolPerMeal();
+    expect(Math.round(comp.waterVolPerMeal.value * 100) / 100).toBe(NaN);
+    
+    comp.bodyWeight.value = 1;
+    comp.waterVolPerDay.value = 0;
+    comp.mealsPerDay.value = 9;
+    comp.getWaterVolPerMeal();
+    expect(Math.round(comp.waterVolPerMeal.value * 100) / 100).toBe(0);
+
+    comp.bodyWeight.value = 33.33;
+    comp.waterVolPerDay.value = 231.2;
+    comp.mealsPerDay.value = 4;
+    comp.getWaterVolPerMeal();
+    expect(Math.round(comp.waterVolPerMeal.value * 100) / 100).toBe(57.8);
+    
+    comp.bodyWeight.value = 1000;
+    comp.waterVolPerDay.value = 3256;
+    comp.mealsPerDay.value = 2;
+    comp.getWaterVolPerMeal();
+    expect(Math.round(comp.waterVolPerMeal.value * 100) / 100).toBe(1628);
+})
+
+test('checks the dilution rate calculation', () => {
+    const comp = useTubeFeedCalculator();
+    
+    comp.species.value = 'cat';
+    
+    comp.bodyWeight.value = -1;
+    comp.waterVolPerDay.value = NaN;
+    comp.foodVolPerDay.value = NaN;
+    comp.getRoundedDilutionRate();
+    expect(Math.round(comp.dilutionRate.value * 100) / 100).toBe(NaN);
+    
+    comp.bodyWeight.value = 0;
+    comp.waterVolPerDay.value = NaN;
+    comp.foodVolPerDay.value = 0;
+    comp.getRoundedDilutionRate();
+    expect(Math.round(comp.dilutionRate.value * 100) / 100).toBe(NaN);
+    
+    comp.bodyWeight.value = 1;
+    comp.waterVolPerDay.value = 0;
+    comp.foodVolPerDay.value = 70;
+    comp.getRoundedDilutionRate();
+    expect(Math.round(comp.dilutionRate.value * 100) / 100).toBe(0);
+
+    comp.bodyWeight.value = 33.33;
+    comp.waterVolPerDay.value = 231.2;
+    comp.foodVolPerDay.value = 971;
+    comp.getRoundedDilutionRate();
+    expect(Math.round(comp.dilutionRate.value * 100) / 100).toBe(0.24);
+    
+    comp.bodyWeight.value = 1000;
+    comp.waterVolPerDay.value = 3256;
+    comp.foodVolPerDay.value = 12448;
+    comp.getRoundedDilutionRate();
+    expect(Math.round(comp.dilutionRate.value * 100) / 100).toBe(0.26);
 })

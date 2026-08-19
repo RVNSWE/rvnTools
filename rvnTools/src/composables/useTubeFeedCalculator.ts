@@ -57,54 +57,6 @@ export function useTubeFeedCalculator() {
         formatFeedingPlan(); // create the formatted feeding plan
     }
 
-    function getRoundedContainersPerDay() {
-        containersPerDay.value = Math.round(containersPerDay.value * 10) / 10;
-    }
-
-    function getRoundedWaterVolPerMeal() {
-        waterVolPerMeal.value = roundDecimal(waterVolPerMeal.value);
-    }
-
-    function getRoundedFoodVolPerMeal() {
-        foodVolPerMeal.value = roundDecimal(foodVolPerMeal.value);
-    }
-
-    function getWaterVolPerMeal() {
-        waterVolPerMeal.value = waterVolPerDay.value / mealsPerDay.value;
-    }
-
-    function getFoodVolPerMeal() {
-        foodVolPerMeal.value = foodVolPerDay.value / mealsPerDay.value;
-    }
-
-    function getTotalVolPerDay() {
-        totalVolPerDay.value = foodVolPerDay.value + additionalWaterVol.value;
-    }
-
-    function getAdditionalWaterVol() {
-        additionalWaterVol.value = calculateBasicFluidRequirement() - dietWaterVol.value;
-    }
-
-    function getDietWaterVol() {
-        dietWaterVol.value = foodVolPerDay.value * (waterPercentage.value / 100);
-    }
-
-    function getContainersPerDay() {
-        containersPerDay.value = Math.round(foodVolPerDay.value / dietNetWeight.value * 10) / 10;
-    }
-
-    function getFoodVolPerDay() {
-        foodVolPerDay.value = rer.value / kcalPerG.value;
-    }
-
-    function getRer() {
-        rer.value = (70 * Math.pow(bodyWeight.value, 0.75)) / days.value * day.value;
-    }
-
-    function getMaxVolPerMeal() {
-        maxVolPerMeal.value = bodyWeight.value * maxMlPerKg;
-    }
-
     function getFlushVol() {
         if (bodyWeight.value < 1) {
             flushVol.value = 1.5;
@@ -129,19 +81,32 @@ export function useTubeFeedCalculator() {
         }
     }
 
-    function calculateBasicFluidRequirement() {
-        let requirement = 0;
+    function getMaxVolPerMeal() {
+        maxVolPerMeal.value = bodyWeight.value * maxMlPerKg;
+    }
 
-        if (species.value === 'cat')
-        {
-            requirement = 80 * Math.pow(bodyWeight.value, 0.75);
-        }
-        else
-        {
-            requirement = 132 * Math.pow(bodyWeight.value, 0.75);
-        }
+    function getRer() {
+        rer.value = (70 * Math.pow(bodyWeight.value, 0.75)) / days.value * day.value;
+    }
 
-        return requirement;
+    function getFoodVolPerDay() {
+        foodVolPerDay.value = rer.value / kcalPerG.value;
+    }
+
+    function getContainersPerDay() {
+        containersPerDay.value = Math.round(foodVolPerDay.value / dietNetWeight.value * 10) / 10;
+    }
+
+    function getDietWaterVol() {
+        dietWaterVol.value = foodVolPerDay.value * (waterPercentage.value / 100);
+    }
+
+    function getAdditionalWaterVol() {
+        additionalWaterVol.value = calculateBasicFluidRequirement() - dietWaterVol.value;
+    }
+
+    function getTotalVolPerDay() {
+        totalVolPerDay.value = foodVolPerDay.value + additionalWaterVol.value;
     }
 
     function calculateMealsPerDay() {
@@ -177,6 +142,14 @@ export function useTubeFeedCalculator() {
         totalVolPerMeal.value = totalVolPerDay.value / mealsPerDay.value; // (ml) recalculate the volume per meal
     }
 
+    function getFoodVolPerMeal() {
+        foodVolPerMeal.value = foodVolPerDay.value / mealsPerDay.value;
+    }
+
+    function getWaterVolPerMeal() {
+        waterVolPerMeal.value = waterVolPerDay.value / mealsPerDay.value;
+    }
+
     function getRoundedDilutionRate() {
         let rawDilutionRate = waterVolPerDay.value / foodVolPerDay.value;
 
@@ -190,6 +163,33 @@ export function useTubeFeedCalculator() {
         }
 
         foodVolPerMeal.value += waterVolPerMeal.value; // if diluted, add water volume to food volume for total volume per meal
+    }
+
+    function getRoundedFoodVolPerMeal() {
+        foodVolPerMeal.value = roundDecimal(foodVolPerMeal.value);
+    }
+
+    function getRoundedWaterVolPerMeal() {
+        waterVolPerMeal.value = roundDecimal(waterVolPerMeal.value);
+    }
+
+    function getRoundedContainersPerDay() {
+        containersPerDay.value = Math.round(containersPerDay.value * 10) / 10;
+    }
+
+    function calculateBasicFluidRequirement() {
+        let requirement = 0;
+
+        if (species.value === 'cat')
+        {
+            requirement = 80 * Math.pow(bodyWeight.value, 0.75);
+        }
+        else
+        {
+            requirement = 132 * Math.pow(bodyWeight.value, 0.75);
+        }
+
+        return requirement;
     }
 
     function roundDecimal(value: number) {
@@ -329,6 +329,7 @@ export function useTubeFeedCalculator() {
         maxVolPerMeal,
         rer,
         foodVolPerDay,
+        waterVolPerDay,
         dietWaterVol,
         additionalWaterVol,
         totalVolPerDay,
